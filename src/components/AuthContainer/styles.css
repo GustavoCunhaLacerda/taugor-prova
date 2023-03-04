@@ -1,0 +1,28 @@
+.authPage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+}
+
+.authContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 380px;
+  border-radius: 8px;
+  border: 3px solid var(--blue-base);
+}
+
+.authHeader {
+  background-color: #2581c4;
+  padding: 30px;
+}
+
+.authForm {
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+}

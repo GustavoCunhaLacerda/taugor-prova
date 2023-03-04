@@ -1,0 +1,11 @@
+.headerContainer {
+  /* background-color: aqua; */
+  border-bottom: 6px solid #e6eaed;
+}
+
+.pageInfoBox {
+  /* background-color: blueviolet; */
+  flex-grow: 1;
+  border-right: 1px solid #e6eaed;
+  border-left: 1px solid #e6eaed;
+}
