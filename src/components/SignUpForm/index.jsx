@@ -1,9 +1,10 @@
 import { useRef } from "react";
 import { TextField, Button, Typography, Link } from '@mui/material/'
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from "../../firebase"
 
 import { useNavigate } from "react-router-dom";
+import { extractErrorMessage } from "../../ultils/firebaseErrors";
+import AuthErrorMessage from "../AuthErrorMessage";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function SignUpForm() {
   const navigate = useNavigate();
@@ -13,23 +14,43 @@ export default function SignUpForm() {
   const passwordRef = useRef();
   const passwordConfirmRef = useRef();
 
+  const { 
+    handleRegister,
+    setError,
+    errorMessage,
+  } = useAuth()
+
   function handleEnterSubmit(e) {
     if (e.key === 'Enter') {
       handleSubmit(e)
     }
   }
 
-  function handleSubmit(e) {
-    createUserWithEmailAndPassword(auth, emailRef.current.value, passwordRef.current.value)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        navigate('/');
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log({ errorCode, errorMessage });
-      });
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    if (
+      nameRef.current.value === '' ||
+      emailRef.current.value === '' ||
+      passwordRef.current.value === '' ||
+      passwordConfirmRef.current.value === ''
+    ) {
+      return setError('Todos os campos devem ser preenchidos');
+    }
+
+    if (passwordRef.current.value !== passwordConfirmRef.current.value) {
+      return setError('As senhas não são iguais');
+    }
+
+    try {
+      await handleRegister(emailRef.current.value, passwordRef.current.value, nameRef.current.value);
+      navigate('/', { replace: true });
+
+    } catch (error) {
+
+      const errorText = extractErrorMessage(error.message)
+      setError(errorText)
+    }
   }
 
   return (
@@ -80,6 +101,7 @@ export default function SignUpForm() {
         fullWidth
         style={{ marginBottom: '15px' }}
       />
+      <AuthErrorMessage message={errorMessage} />
       <Button
         variant="outlined"
         onClick={handleSubmit}
@@ -87,7 +109,7 @@ export default function SignUpForm() {
         Entrar
       </Button>
       <Typography variant="body1" component="span">
-        Já possui uma conta? <Link href='/login'>Entre</Link>
+        Já possui uma conta? <Link href='/login'>Registrar</Link>
       </Typography>
     </>
   )

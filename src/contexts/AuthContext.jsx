@@ -1,4 +1,6 @@
+import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { auth } from "../firebase";
 
 const AuthContext = createContext();
 
@@ -7,7 +9,6 @@ export function useAuth() {
 }
 
 const AuthProvider = ({ children }) => {
-
   const [passwordStates, setPasswordStates] = React.useState({
     showPassword: false,
     showConfirmPassword: false,
@@ -17,48 +18,48 @@ const AuthProvider = ({ children }) => {
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    // onAuthStateChanged(auth, (user) => {
-    //   setCurrentUser(user);
-    // })
+    onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    })
   }, []);
 
   const handleRegister = async (email, password, name) => {
-    // await createUserWithEmailAndPassword(
-    //   auth,
-    //   email,
-    //   password
-    // )
-    // await updateProfile(auth.currentUser, { displayName: name })
+    await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    )
+    await updateProfile(auth.currentUser, { displayName: name })
   };
 
   const handleLogin = async (email, password) => {
-    // await signInWithEmailAndPassword(
-    //   auth,
-    //   email,
-    //   password
-    // );
+    await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
   };
 
   const getUser = () => {
-    // return auth.currentUser;
+    return auth.currentUser;
   }
 
   const setError = (errorMessage) => {
-    // setErrorMessage(errorMessage)
-    // setTimeout(() => {
-    //   setErrorMessage('')
-    // }, 6000);
+    setErrorMessage(errorMessage)
+    setTimeout(() => {
+      setErrorMessage('')
+    }, 6000);
   }
 
   const handleChange = (prop) => (event) => {
-    // setPasswordStates({ ...passwordStates, [prop]: event.target.value });
+    setPasswordStates({ ...passwordStates, [prop]: event.target.value });
   };
 
   const resetPasswordStates = () => {
-    // setPasswordStates({
-    //   showPassword: false,
-    //   showConfirmPassword: false,
-    // })
+    setPasswordStates({
+      showPassword: false,
+      showConfirmPassword: false,
+    })
   }
 
 
@@ -82,5 +83,5 @@ const AuthProvider = ({ children }) => {
 export default AuthProvider;
 
 export const HandleLogout = async () => {
-  // await signOut(auth);
+  await signOut(auth);
 };

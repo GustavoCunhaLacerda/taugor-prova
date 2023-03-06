@@ -1,4 +1,4 @@
-import { Box, Button, Icon, Typography, Container, IconButton } from "@mui/material";
+import { Box, Button, Icon, Typography, Container, IconButton, AppBar } from "@mui/material";
 import images from "../../assets/images";
 import { Home } from '@mui/icons-material';
 
@@ -13,7 +13,7 @@ export default function Header({ pageName }) {
   }
 
   return (
-    <Container maxWidth="100%" className="headerContainer" disableGutters sx={{ display: "flex" }}>
+    <Container maxWidth="100%" className="headerContainer" disableGutters sx={{ display: "flex", position: "sticky" }}>
       <img src={images.logo} width="200px" style={{ padding: "16px" }} />
       <Box
         className="pageInfoBox"

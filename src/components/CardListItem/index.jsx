@@ -1,16 +1,18 @@
 import { Button, Card, CardActions, CardContent, CardMedia, Typography, Box, Collapse, Icon } from "@mui/material";
-import { Add, Remove } from '@mui/icons-material';
+import { Add, Download, Remove } from '@mui/icons-material';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "../../contexts/ProfileContext";
 import { formatDate } from "../../ultils/date";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import PdfProfile from "../PdfProfile";
 
 export default function CardListItem({ employee, employeeId, historic }) {
   const [details, setDetails] = useState(false);
 
   const navigate = useNavigate()
-  const { updateFormData,currProfile, manageEmployee } = useProfile();
-  ;
+  const { updateFormData, currProfile, manageEmployee } = useProfile();
+
   function toggleDetails() {
     setDetails(!details);
   }
@@ -31,15 +33,14 @@ export default function CardListItem({ employee, employeeId, historic }) {
       birthDate: formatDate(employee.birthDate),
       admissionDate: formatDate(employee.admissionDate),
     });
-    
+
     currProfile.current = employeeId;
     manageEmployee(e, true, {
       ...employee,
       birthDate: formatDate(employee.birthDate),
       admissionDate: formatDate(employee.admissionDate),
-    })
+    });
   }
-
 
   function handleHistoric() {
     navigate('/historic/' + employee.id);
@@ -90,6 +91,22 @@ export default function CardListItem({ employee, employeeId, historic }) {
               <Button size="small" onClick={handleDismissal} color="error" disabled={!(employee.status === "Active")}>DEMITIR</Button>
             </>
           }
+
+          <PDFDownloadLink
+            document={
+              <PdfProfile profile={{
+                ...employee,
+                birthDate: formatDate(employee.birthDate),
+                admissionDate: formatDate(employee.admissionDate),
+              }} />
+            } fileName={`${employee.name}Profile.pdf`}>
+            {({ loading }) => (
+              <Button size="small" disabled={loading}>
+                <Download />
+              </Button>
+            )}
+          </PDFDownloadLink>
+
         </CardActions>
       </Card>
       <Collapse in={details}>

@@ -1,35 +1,41 @@
 import { useRef } from "react";
 import { TextField, Button, Typography, Link } from '@mui/material/'
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from "../../firebase"
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import AuthErrorMessage from "../AuthErrorMessage";
+import { extractErrorMessage } from "../../ultils/firebaseErrors";
 
 export default function LoginForm() {
   const navigate = useNavigate();
   const emailRef = useRef();
   const passwordRef = useRef();
 
+  const {
+    handleLogin,
+    setError,
+    errorMessage,
+  } = useAuth()
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (emailRef.current.value === '' || passwordRef.current.value === '') {
+      return setError('Digite o email e a senha');
+    }
+
+    try {
+      await handleLogin(emailRef.current.value, passwordRef.current.value);
+      navigate('/dashboard');
+    } catch (error) {
+      const errorText = extractErrorMessage(error.message);
+      setError(errorText)
+    }
+  }
+
   const handleEnterSubmit = (e) => {
     if (e.key === 'Enter') {
       handleSubmit(e)
     }
-  }
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
-    signInWithEmailAndPassword(auth, emailRef.current.value, passwordRef.current.value)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log(user);
-        alert("Logado com sucesso!")
-        navigate('/dashboard')
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log({ errorCode, errorMessage })
-      });
   }
 
   return (
@@ -61,6 +67,7 @@ export default function LoginForm() {
         fullWidth
         style={{ marginBottom: '15px' }}
       />
+      <AuthErrorMessage message={errorMessage} />
       <Button
         variant="outlined"
         onClick={handleSubmit}
